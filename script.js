@@ -122,12 +122,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 // --- ADDED: Sync to Google Sheets CRM ---
                 const googleSheetURL = 'https://script.google.com/macros/s/AKfycbwkGX5abaTOm3-urX13b7xAYWsyoVjuWgMD0MK_e7YvlsfcfYvchaoMHr-hLt8yvgrCLg/exec';
-                if (googleSheetURL !== 'YOUR_GOOGLE_APPS_SCRIPT_WEBAPP_URL_HERE') {
-                    try {
-                        fetch(googleSheetURL, { method: 'POST', body: formData }).catch(e => console.log('CRM Sync error', e));
-                    } catch (err) {
-                        console.error('CRM Sync failed', err);
+                try {
+                    const crmData = new URLSearchParams();
+                    for (const pair of formData.entries()) {
+                        crmData.append(pair[0], pair[1]);
                     }
+                    fetch(googleSheetURL, {
+                        method: 'POST',
+                        mode: 'no-cors',
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                        body: crmData.toString()
+                    }).catch(e => console.log('CRM Sync error', e));
+                } catch (err) {
+                    console.error('CRM Sync failed', err);
                 }
                 // ----------------------------------------
 
